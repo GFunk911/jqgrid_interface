@@ -1,0 +1,61 @@
+jQuery(document).ready(function(){ 
+	<%= render :partial => 'grid/table_segment', :locals => {:gp => gp} %>
+	<% if gp.has_subgrid? %>
+	subGridRowExpanded: function(subgrid_id, row_id) {
+	  var subgrid_table_id;
+      subgrid_table_id = subgrid_id+"_t";
+      jQuery("#"+subgrid_id).html("<table id='"+subgrid_table_id+"' class='scroll'></table>");
+		jQuery("#"+subgrid_table_id).jqGrid({
+		  url:'/grid/grid_data?format=xml&gp[table]=<%=gp.table%>&gp[sopt]=eq&gp[searchField]=id&gp[searchString]='+row_id+'&detail=true',
+		  datatype: 'xml',
+		  mtype: 'GET',
+		  colNames: [<%= gp.column_names.map { |x| "'#{pretty_title(gp.table,x)}'" }.join(",") %>],
+		  colModel: [ 
+		    <% gp.columns.each_with_index do |col,i| %>
+		      <%= column_desc(col,gp.table,gp.columns.size == i+1) %>
+		    <% end %> ],
+		  pager: jQuery('#pager'),
+		  rowNum:10,
+		  rowList:[10,20,30],
+		  sortname: 'id',
+		  sortorder: "desc",
+		  viewrecords: true,
+		  imgpath: '/themes/basic/images',
+		  caption: '<%=gp.table%>',
+		  cellEdit: true,
+		  cellurl: '/grid/update?authenticity_token=<%=form_authenticity_token%>&table=<%=gp.table%>&detail=true',
+		  cellSubmit: 'remote',
+		  onCellSelect: function(id,y,z) {
+			   updateRouteGrid(id,'<%=gp.table%>');
+			 },
+		  afterSaveCell: function(a,b,c,d,e) {
+		    reloadAllGrids();
+	      },
+		  altRows: true})
+		},
+	  <% end %>
+      afterSaveCell: function(a,b,c,d,e) {
+	    reloadAllGrids();
+      }
+
+  }); 
+}); 
+
+jQuery(document).ready(function(){
+  jQuery(<%= "'##{gp.table_id}_addrow'" %>).click(function() {
+    jQuery(<%= "'##{gp.table_id}'" %>).editGridRow( "new",{top: 1, left: 1, url: '/grid/update?authenticity_token=<%=form_authenticity_token%>', editData: {table: '<%=gp.table%>'}} );	
+  })
+});
+
+$(document).ready( function() {
+   $('#<%=gp.table%>_add_column_link').click(function() {
+	  $('#<%=gp.table%>_add_column').show('slide')
+  })   
+});
+
+
+$(document).ready( function() {
+	$(<%= "'##{gp.table_id}_search_link'" %>).click(function() {
+		$('#<%=gp.table_id%>').searchGrid( {sopt:['eq','cn']} );
+	})
+});

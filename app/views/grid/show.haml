@@ -1,0 +1,5 @@
+- form_for :row, :url => {:controller => 'grid', :action => 'show'} do |f|
+  - @table.keys.each do |k|
+    = k
+    = f.text_field k
+    %br

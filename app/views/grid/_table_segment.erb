@@ -1,0 +1,24 @@
+jQuery(<%= "'##{gp.table_id}'" %>).jqGrid({
+  url:'/grid/grid_data?format=xml&gp[table]=<%=gp.table%>&gp[sopt]=<%=gp.sopt%>&gp[searchField]=<%=gp.searchField%>&gp[searchString]=<%=gp.searchString%>',
+  datatype: 'xml',
+  mtype: 'GET',
+  colNames: [<%= gp.column_names.map { |x| "'#{pretty_title(gp.table,x)}'" }.join(",") %>],
+  colModel: [ 
+    <% gp.columns.each_with_index do |col,i| %>
+      <%= column_desc(col,gp.table,gp.columns.size == i+1) %>
+    <% end %> ],
+  pager: jQuery('#pager'),
+  rowNum:10,
+  rowList:[10,20,30],
+  sortname: 'id',
+  sortorder: "desc",
+  viewrecords: true,
+  imgpath: '/themes/basic/images',
+  caption: '<%=gp.table%>',
+  cellEdit: true,
+  cellurl: '/grid/update?authenticity_token=<%=form_authenticity_token%>&table=<%=gp.table%>',
+  cellSubmit: 'remote',
+  altRows: true,
+  wifdth: 1000,
+  shrinkToFit: false,
+  subGrid: <%=gp.has_subgrid?%>, 
