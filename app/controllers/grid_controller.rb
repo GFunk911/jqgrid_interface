@@ -33,7 +33,7 @@ end
 
 class GridController < ApplicationController
   def index
-    @tables = []
+    @tables = ['players']
   end
   def table_setup_js
     gp = GridParams.new(params[:gp])
@@ -65,6 +65,7 @@ class GridController < ApplicationController
     render :partial => 'grid_data', :locals => {:gp => gp}
   end
   def sorted_by_params(arr,ops)
+    puts "sorted_by_params #{ops.inspect}"
     col = params[:sidx] || (return arr)
     res = arr.sort_by { |x| x.send(col).to_appr_type }
     res = res.reverse if params[:sord] == 'desc' and col != 'id'
