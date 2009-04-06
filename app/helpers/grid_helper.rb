@@ -3,7 +3,7 @@ module GridHelper
     comma = (last ? "" : ",")
     col_obj = Column.new(:table => table, :column => col)
     # "{name:'#{col}', index:'#{col}', editable:'true', width:'250'}"
-    eb = (col == 'next_center_name')
+    eb = col_obj.editable?
     h = {:name => col, :index => col, :editable => eb, :width => 150, :sortable => true}
     if col_obj.dropdown?
       h[:edittype] = 'select'
@@ -50,19 +50,20 @@ class Column
   include FromHash
   def possible_values
     return [] unless map_row
-    col = Column.new(:table => map_row['parent_column'].split(":")[0], :column => map_row['parent_column'].split(":")[1])
-    res = col.all_values
-    puts "possible_values: #{res.inspect}"
-    res
+    map_row.possible_values
   end
   fattr(:map_row) do
-    #CouchTable.new('columns').docs.find { |x| x['child_column'] == "#{table}:#{column}" and x['constraint_type'] == 'foreign_key' }
-    nil
+    ForeignKey.all.find { |x| x.child_table == table and x.child_column == column }
   end
   def dropdown?
     !!map_row
   end
   def all_values
     CouchTable.new(table).possible_values(column)
+  end
+  def editable?
+    cols = ColumnConstraint.parent_all.select { |x| x.child_table == table and x.child_column == column }
+    return true if cols.empty?
+    cols.any? { |x| x.child_editable? }
   end
 end

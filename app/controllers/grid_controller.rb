@@ -75,12 +75,16 @@ class GridController < ApplicationController
     raise "can't create new flows"
     Flow.new
   end
+  def find_obj(params)
+    #GraphManager.instance.db.flows(:detail => detail).find { |x| x.id == obj_id }
+    CouchTable.get(params[:table]).docs.find { |x| x.id == params[:id] }
+  end
   def update
     respond_to do |format|
       format.js do
         puts params.inspect
         detail = (params[:detail].to_s == 'true')
-        obj = (params[:id] and params[:id] != '_empty') ? GraphManager.instance.db.flows(:detail => detail).find { |x| x.id == params[:id] } : new_doc
+        obj = (params[:id] and params[:id] != '_empty') ? find_obj(params) : new_doc
         [:id,:authenticity_token,:action,:controller,:oper,:table,:detail].each { |x| params.delete(x) }
         raise "nil obj" unless obj
         params.each { |k,v| obj.send("#{k}=",v) }

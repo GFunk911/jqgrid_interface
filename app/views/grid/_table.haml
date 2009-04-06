@@ -1,4 +1,11 @@
 %span.table-title= table.title
+%span.table-actions
+  %a{:href => "#", :id => "#{table}_add_column_link"}= " (Add Column)" 
+  %a{:href => "#", :id => "#{table}_addrow"}= " (Add Row)"
 %script{:type => 'text/javascript', :src => table.table_setup_js_url}
 %a{:href => "#", :id => "#{table.table_id}_search_link"}= "Search"
+- form_for :column, Column.new, :url => {:controller => 'grid', :action => 'new_column', :table => table} do |f|
+  %span{:id => "#{table}_add_column", :style => "display:none"}
+    = f.text_field :column
+    = f.submit "Add"
 %table{:id => table.table_id, :class => 'flow-grid'}

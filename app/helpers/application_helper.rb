@@ -8,4 +8,7 @@ module ApplicationHelper
     gp = GridParams.new(ops)
     render :partial => 'grid/table', :object => gp
   end
+  def render_whole_grid(t)
+    render_grid :table => t, :searchString => t, :searchField => 'table'
+  end
 end
