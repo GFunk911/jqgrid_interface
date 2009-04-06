@@ -46,14 +46,14 @@ module FromHash
   end
 end
 class Column
-  attr_accessor :table, :column
+  attr_accessor :table, :column, :app
   include FromHash
   def possible_values
     return [] unless map_row
     map_row.possible_values
   end
   fattr(:map_row) do
-    ForeignKey.all.find { |x| x.child_table == table and x.child_column == column }
+    app.constraints(ForeignKey).find { |x| x.child_table == table and x.child_column == column }
   end
   def dropdown?
     !!map_row
@@ -62,7 +62,7 @@ class Column
     CouchTable.new(table).possible_values(column)
   end
   def editable?
-    cols = ColumnConstraint.parent_all.select { |x| x.child_table == table and x.child_column == column }
+    cols = app.constraints.select { |x| x.child_table == table and x.child_column == column }
     return true if cols.empty?
     cols.any? { |x| x.child_editable? }
   end

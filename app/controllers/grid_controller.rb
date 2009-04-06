@@ -50,8 +50,9 @@ class GridController < ApplicationController
     Flow.new
   end
   def find_obj(params)
+    app = App.get(params[:app])
     #GraphManager.instance.db.flows(:detail => detail).find { |x| x.id == obj_id }
-    CouchTable.get(params[:table]).docs.find { |x| x.id == params[:id] }
+    app.get_table(params[:table]).docs.find { |x| x.id == params[:id] }
   end
   def update
     respond_to do |format|

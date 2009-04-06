@@ -26,8 +26,11 @@ class GridParams
   def title
     table.gsub(/_/," ").camelize.pluralize + (subtitle ? " - #{subtitle}" : "")
   end
+  def get_app
+    App.get(app)
+  end
   fattr(:cls) do
-    CouchTable.get(table)
+    get_app.get_table(table)
   end
   def columns
     cls.keys
