@@ -1,7 +1,7 @@
 module GridHelper
-  def column_desc(col,table,last)
+  def column_desc(col,table,app,last)
     comma = (last ? "" : ",")
-    col_obj = Column.new(:table => table, :column => col)
+    col_obj = Column.new(:table => table, :column => col, :app => app)
     # "{name:'#{col}', index:'#{col}', editable:'true', width:'250'}"
     eb = col_obj.editable?
     h = {:name => col, :index => col, :editable => eb, :width => 150, :sortable => true}

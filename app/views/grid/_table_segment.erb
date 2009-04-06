@@ -5,7 +5,7 @@ jQuery(<%= "'##{gp.table_id}'" %>).jqGrid({
   colNames: [<%= gp.column_names.map { |x| "'#{pretty_title(gp.table,x)}'" }.join(",") %>],
   colModel: [ 
     <% gp.columns.each_with_index do |col,i| %>
-      <%= column_desc(col,gp.table,gp.columns.size == i+1) %>
+      <%= column_desc(col,gp.table,gp.get_app,gp.columns.size == i+1) %>
     <% end %> ],
   pager: jQuery('#pager'),
   rowNum:10,
