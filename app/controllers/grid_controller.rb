@@ -40,36 +40,10 @@ class GridController < ApplicationController
     puts "rendering table_setup_js with table_id #{gp.table_id}"
     render :partial => 'table_setup_js', :locals => {:gp => gp}
   end
-  def get_rows(gp,params)
-    detail = (params[:detail].to_s == 'true')
-    route_grid = (gp.grid_type == 'full_route')
-    if route_grid
-      rows = gp.cls.docs
-      rows = rows.map { |x| x.flows }.flatten
-      rows = gp.filtered(rows)
-      raise "should be one row, not #{rows.size}" unless rows.size == 1
-      rows = rows.first.flows_to_dest
-      rows
-    else
-      rows = gp.cls.docs
-      rows = sorted_by_params(rows,params)
-      rows = gp.filtered(rows)
-      rows = rows.map { |x| x.flows }.flatten if detail
-      rows = rows
-      rows
-    end
-  end
   def grid_data
     gp = GridParams.new(params[:gp])
-    @rows = get_rows(gp,params)
+    @rows = gp.get_rows(params)
     render :partial => 'grid_data', :locals => {:gp => gp}
-  end
-  def sorted_by_params(arr,ops)
-    puts "sorted_by_params #{ops.inspect}"
-    col = params[:sidx] || (return arr)
-    res = arr.sort_by { |x| x.send(col).to_appr_type }
-    res = res.reverse if params[:sord] == 'desc' and col != 'id'
-    res
   end
   def new_doc
     raise "can't create new flows"

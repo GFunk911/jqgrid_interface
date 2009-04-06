@@ -1,5 +1,5 @@
 jQuery(<%= "'##{gp.table_id}'" %>).jqGrid({
-  url:'/grid/grid_data?format=xml&gp[table]=<%=gp.table%>&gp[sopt]=<%=gp.sopt%>&gp[searchField]=<%=gp.searchField%>&gp[searchString]=<%=gp.searchString%>',
+  url:'<%=gp.grid_data_url%>',
   datatype: 'xml',
   mtype: 'GET',
   colNames: [<%= gp.column_names.map { |x| "'#{pretty_title(gp.table,x)}'" }.join(",") %>],
