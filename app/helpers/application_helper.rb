@@ -9,6 +9,6 @@ module ApplicationHelper
     render :partial => 'grid/table', :object => gp
   end
   def render_whole_grid(t)
-    render_grid :table => t, :searchString => t, :searchField => 'table'
+    render_grid :table => t, :searchString => t, :searchField => 'table', :app => params[:app]
   end
 end
