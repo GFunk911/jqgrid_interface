@@ -66,4 +66,7 @@ class Column
     return true if cols.empty?
     cols.any? { |x| x.child_editable? }
   end
+  def pretty_name
+    column.gsub(/_/," ").split(" ").map { |x| x.camelize }.join(" ")
+  end
 end

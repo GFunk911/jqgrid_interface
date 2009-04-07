@@ -53,7 +53,7 @@ class BaseGridParams
   def sorted(arr,ops)
     puts "sorted_by_params #{ops.inspect}"
     col = ops[:sidx] || (return arr)
-    res = arr.sort_by { |x| x.send(col).to_appr_type }
+    res = arr.sort_by { |x| x.send(col).to_appr_type || '' }
     res = res.reverse if ops[:sord] == 'desc' and col != 'id'
     res
   end
