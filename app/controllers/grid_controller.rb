@@ -83,8 +83,9 @@ class GridController < ApplicationController
     @row = @table.docs.find { |x| x.id == params[:id] }
   end
   def new_table
-    table = params[:table][:column]
-    CouchTable.new(table).create!
+    app = App.get(params[:table][:app])
+    table = app.get_table(params[:table][:table])
+    table.create!
     redirect_to :controller => 'grid', :action => 'index'
   end
     

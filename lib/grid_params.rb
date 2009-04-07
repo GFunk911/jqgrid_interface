@@ -1,6 +1,6 @@
 require 'mharris_ext'
 
-class GridParams
+class BaseGridParams
   def self.base_vars
     [:table, :table_id, :searchField, :searchString, :subtitle, :sopt, :grid_type]
   end
@@ -89,4 +89,7 @@ class GridParams
   def subgrid?
     calc_grid_type == 'subgrid'
   end
+end
+
+class GridParams < BaseGridParams
 end

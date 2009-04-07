@@ -8,4 +8,4 @@
   %span{:id => "#{table}_add_column", :style => "display:none"}
     = f.text_field :column
     = f.submit "Add"
-%table{:id => table.table_id, :class => 'flow-grid'}
+%table{:id => table.table_id, 'table-type' => table.table, :class => 'flow-grid'}
