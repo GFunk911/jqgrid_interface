@@ -53,9 +53,10 @@ class Column
     map_row.possible_values
   end
   fattr(:map_row) do
-    app.constraints(ForeignKey).find { |x| x.child_table == table and x.child_column == column }
+    app.constraints(ForeignKey).find { |x| x.child_table == table and x.child_column == column and x.for_possible_values? }
   end
   def dropdown?
+    return false # cause it's now using autocomplete
     !!map_row
   end
   def all_values

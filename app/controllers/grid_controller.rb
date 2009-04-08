@@ -46,8 +46,10 @@ class GridController < ApplicationController
     render :partial => 'grid_data', :locals => {:gp => gp}
   end
   def new_doc
-    raise "can't create new flows"
-    Flow.new
+    res = CouchRest::Document.new
+    res['app'] = 'lunch'
+    res.database = App.get('lunch').db
+    res
   end
   def find_obj(params)
     app = App.get(params[:app])
@@ -59,11 +61,13 @@ class GridController < ApplicationController
       format.js do
         puts params.inspect
         detail = (params[:detail].to_s == 'true')
-        obj = (params[:id] and params[:id] != '_empty') ? find_obj(params) : new_doc
-        [:id,:authenticity_token,:action,:controller,:oper,:table,:detail].each { |x| params.delete(x) }
+        make_new = (params[:id] and params[:id] != '_empty')
+        obj = make_new ? find_obj(params) : new_doc
+        [:id,:authenticity_token,:action,:controller,:oper,:detail].each { |x| params.delete(x) }
         raise "nil obj" unless obj
         params.each { |k,v| obj.send("#{k}=",v) }
         obj.save
+        TableManager.instance! if make_new
         render :text => 'sup'
       end
     end
@@ -88,5 +92,36 @@ class GridController < ApplicationController
     table.create!
     redirect_to :controller => 'grid', :action => 'index'
   end
-    
+  def autocomplete_values_old
+    col = params[:input_id].split("_")[1..-1].join("_")
+    app = App.get(params[:app])
+    letter = params[:q]
+    vals = Column.new(:app => app, :table => params[:table], :column => 'person').possible_values
+    vals = vals.select { |x| x =~ /^#{letter}/i } unless letter.blank?
+    str = vals.join("\n")
+    render :text => str
+    #render :text => (1..100).to_a.join("\n")
+  end 
+  def autocomplete_values
+    render :text => AutoCompleter.new(params).values_str
+  end
+end
+
+class AutoCompleter
+  attr_accessor :app, :table, :column, :letter
+  def initialize(params)
+    @column = params[:input_id].split("_")[1..-1].join("_")
+    @table = params[:table]
+    @app = App.get(params[:app])
+    @letter = params[:q]
+  end
+  fattr(:column_obj) { Column.new(:app => app, :table => table, :column => column) }
+  def values
+    res = column_obj.possible_values
+    res = res.select { |x| x =~ /^#{letter}/i } unless letter.blank?
+    res
+  end
+  def values_str
+    values.join("\n")
+  end
 end
