@@ -10,6 +10,10 @@ module GridHelper
       str = col_obj.possible_values.map { |x| "#{x}:#{x}" }.join(";")
       h[:editoptions] = {:value => str, :class => 'gridSelect'}.to_js_hash
     end
+    if col == 'code'
+      h[:formatter] = 'newlineFormatter' 
+      h[:edittype] = 'textarea'
+    end
     if col_obj.column == 'link'
       #h[:formatter] = 'link'
       h[:formatter] = 'myLink'
@@ -18,7 +22,7 @@ module GridHelper
     #  h[:formatter] = 'fooFormatter'
     end
   
-    h.to_js_hash.gsub(/'myLink'/,"myLink") + comma
+    h.to_js_hash.gsub(/'myLink'/,"myLink").gsub(/'newlineFormatter'/,'newlineFormatter') + comma
   end
   def pretty_title(table,column)
     str = column.gsub(/_/," ").camelize
