@@ -43,12 +43,14 @@ jQuery(document).ready(function(){
 
 jQuery(document).ready(function(){
   jQuery(<%= "'##{gp.table_id}_addrow'" %>).click(function() {
+	//alert('clicked add row')
     jQuery(<%= "'##{gp.table_id}'" %>).editGridRow( "new",{top: 1, left: 1, url: '/grid/update?authenticity_token=<%=form_authenticity_token%>', editData: {table: '<%=gp.table%>'}} );	
   })
 });
 
 $(document).ready( function() {
    $('#<%=gp.table%>_add_column_link').click(function() {
+	  //alert('clicked add column')
 	  $('#<%=gp.table%>_add_column').show('slide')
   })   
 });
