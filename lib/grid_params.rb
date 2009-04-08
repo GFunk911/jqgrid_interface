@@ -84,6 +84,7 @@ class BaseGridParams
     'grid'
   end
   def has_subgrid?
+    return false
     calc_grid_type == 'grid'
   end
   def subgrid?
