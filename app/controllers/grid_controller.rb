@@ -82,8 +82,9 @@ class GridController < ApplicationController
     CouchTable.new(params[:table]).remove_column(col)
     redirect_to :controller => 'grid', :action => 'index'
   end
-  def showx
-    @table = CouchTable.new(params[:table])
+  def show
+    @app = App.get(params[:app])
+    @table = @app.get_table(params[:table])
     @row = @table.docs.find { |x| x.id == params[:id] }
   end
   def new_table

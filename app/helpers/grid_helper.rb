@@ -4,17 +4,18 @@ module GridHelper
     col_obj = Column.new(:table => table, :column => col, :app => app)
     # "{name:'#{col}', index:'#{col}', editable:'true', width:'250'}"
     eb = col_obj.editable?
-    h = {:name => col, :index => col, :editable => eb, :width => 150, :sortable => true}
+    h = {:name => col, :index => col, :editable => eb, :width => 250, :sortable => true}
     if col_obj.dropdown?
       h[:edittype] = 'select'
       str = col_obj.possible_values.map { |x| "#{x}:#{x}" }.join(";")
       h[:editoptions] = {:value => str, :class => 'gridSelect'}.to_js_hash
     end
+    h[:edittype] = 'textarea' if col.to_s =~ /code/i
     if col == 'code'
       h[:formatter] = 'newlineFormatter' 
       h[:edittype] = 'textarea'
     end
-    if col_obj.column == 'link'
+    if col_obj.column =~ /link/
       #h[:formatter] = 'link'
       h[:formatter] = 'myLink'
     end
@@ -53,18 +54,21 @@ class Column
   attr_accessor :table, :column, :app
   include FromHash
   def possible_values
-    return [] unless map_row
-    map_row.possible_values
+    return [] if map_rows.empty?
+    arr = map_rows.map { |row| row.possible_values }
+    arr.flatten.uniq.select do |val| 
+      arr.all? { |x| x.include?(val) }
+    end
   end
-  fattr(:map_row) do
-    app.constraints(ForeignKey).find { |x| x.child_table == table and x.child_column == column and x.for_possible_values? }
+  fattr(:map_rows) do
+    app.constraints(ForeignKey).select { |x| x.child_table == table and x.child_column == column and x.for_possible_values? }
   end
   def dropdown?
     return false # cause it's now using autocomplete
-    !!map_row
+    !map_rows.empty?
   end
   def all_values
-    CouchTable.new(table).possible_values(column)
+    app.get_table(table).possible_values(column)
   end
   def editable?
     cols = app.constraints.select { |x| x.child_table == table and x.child_column == column }
