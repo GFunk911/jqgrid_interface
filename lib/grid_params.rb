@@ -8,9 +8,13 @@ class BaseGridParams
     base_vars
   end
   attr_accessor *vars
+  attr_accessor :page_info
   include FromHash
   def locals
     (self.class.vars-[:table]).inject({}) { |h,k| h.merge(k => send(k)) }
+  end
+  def pager_id
+    table_id+"_pager"
   end
   fattr(:table_id) { table + "_" + rand(1000000000).to_i.to_s }
   def table_setup_js_url
@@ -57,6 +61,18 @@ class BaseGridParams
     res = res.reverse if ops[:sord] == 'desc' and col != 'id'
     res
   end
+  def paged(arr,ops)
+    page = ops[:page]
+    num = ops[:rows]
+    return arr unless page and num
+    page = page.to_i - 1
+    num = num.to_i
+    start_num = page * num
+    end_num = start_num + num
+    res = arr[start_num...end_num]
+    @page_info = {:all_rows => arr, :page => page+1, :pages => arr.size/num+1}
+    res
+  end
   def get_rows(params)
     gp=self
     detail = (params[:detail].to_s == 'true')
@@ -67,14 +83,14 @@ class BaseGridParams
       rows = gp.filtered(rows)
       raise "should be one row, not #{rows.size}" unless rows.size == 1
       rows = rows.first.flows_to_dest
-      rows
+      paged(rows,params)
     else
       rows = gp.cls.docs
       rows = gp.sorted(rows,params)
       rows = gp.filtered(rows)
       rows = rows.map { |x| x.flows }.flatten if detail
       rows = rows
-      rows
+      paged(rows,params)
     end
   end
   def calc_grid_type

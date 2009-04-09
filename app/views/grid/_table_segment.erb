@@ -7,7 +7,7 @@ jQuery(<%= "'##{gp.table_id}'" %>).jqGrid({
     <% gp.columns.each_with_index do |col,i| %>
       <%= column_desc(col,gp.table,gp.get_app,gp.columns.size == i+1) %>
     <% end %> ],
-  pager: jQuery('#pager'),
+  pager: '<%=gp.pager_id%>',
   rowNum:10,
   rowList:[10,20,30],
   sortname: 'id',

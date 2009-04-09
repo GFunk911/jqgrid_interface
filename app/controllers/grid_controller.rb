@@ -43,6 +43,7 @@ class GridController < ApplicationController
   def grid_data
     gp = GridParams.new(params[:gp])
     @rows = gp.get_rows(params)
+    @page_info = gp.page_info
     render :partial => 'grid_data', :locals => {:gp => gp}
   end
   def new_doc

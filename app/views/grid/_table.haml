@@ -10,3 +10,5 @@
       = f.text_field :column
       = f.submit "Add"
   %table{:id => table.table_id, 'table-type' => table.table, :class => 'flow-grid', :app => table.app}
+  %div{:id => table.pager_id, :class => 'scroll', :style => 'text-align:center;'}
+
